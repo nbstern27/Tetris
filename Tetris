@@ -1,0 +1,354 @@
+import random
+import pygame
+from pygame.locals import *
+
+green = (0, 255, 0)
+red = (255, 0, 0)
+blue = (0, 0, 255)
+cyan = (0, 255, 255)
+orange = (255, 127, 0)
+yellow = (255, 255, 0)
+purple = (128, 0, 128)
+grey = (127, 127, 127)
+black = (0, 0, 0)
+white = (255, 255, 255)
+
+LEN = 10 * 32
+WID = 24 * 32
+BLOCKSIZE = 32
+COLS = LEN // BLOCKSIZE
+ROWS = WID // BLOCKSIZE
+
+class block():
+    def __init__(self, values = [[0] * 3 for i in range(4)], color = None):
+        self.values = values
+        self.color = color
+
+    def removePaint(self, x, y):
+        for i, row in enumerate(self.values):
+            for j, val in enumerate(row):
+                if val == 1:
+                    rect = pygame.Rect(x + j * BLOCKSIZE, y + i * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE)
+                    pygame.draw.rect(screen, black, rect)
+                    if y // BLOCKSIZE + i >= 3:
+                        rect = pygame.Rect(x + j * BLOCKSIZE, y + i * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE)
+                        pygame.draw.rect(screen, white, rect, 1)
+        pygame.display.update()
+
+    def paint(self, x, y):
+        for i, row in enumerate(self.values):
+            for j, val in enumerate(row):
+                if val == 1:
+                    rect = pygame.Rect(x + j * BLOCKSIZE, y + i * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE)
+                    pygame.draw.rect(screen, self.color, rect)
+        pygame.display.update()
+
+    def getRotate(self, param):
+        if self.color == cyan:
+            if self.values == [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 1]]:
+                self.values = [[1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]]
+            else:
+                self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 1]]
+            return
+
+        if self.color == yellow:
+            return
+
+        if self.color == red:
+            if self.values == [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 0, 0], [0, 1, 1, 0]]:
+                self.values = [[0, 0, 0, 0], [0, 1, 0, 0], [1, 1, 0, 0], [1, 0, 0, 0]]
+            else:
+                self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 0, 0], [0, 1, 1, 0]]
+            return
+
+        if self.color == green:
+            if self.values == [[0, 0, 0, 0], [0, 0, 0, 0], [0, 1, 1, 0], [1, 1, 0, 0]]:
+                self.values = [[0, 0, 0, 0], [1, 0, 0, 0], [1, 1, 0, 0], [0, 1, 0, 0]]
+            else:
+                self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 1, 1, 0], [1, 1, 0, 0]]
+            return
+
+        if self.color == blue:
+            if param == 0:
+                if self.values == [[0, 0, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [1, 1, 0, 0]]:
+                    self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [1, 0, 0, 0], [1, 1, 1, 0]]
+                elif self.values == [[0, 0, 0, 0], [0, 0, 0, 0], [1, 0, 0, 0], [1, 1, 1, 0]]:
+                    self.values = [[0, 0, 0, 0], [1, 1, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]]
+                elif self.values == [[0, 0, 0, 0], [1, 1, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]]:
+                    self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 0], [0, 0, 1, 0]]
+                else:
+                    self.values = [[0, 0, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [1, 1, 0, 0]]
+                return
+
+            else:
+                if self.values == [[0, 0, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [1, 1, 0, 0]]:
+                    self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 0], [0, 0, 1, 0]]
+                elif self.values == [[0, 0, 0, 0], [0, 0, 0, 0], [1, 0, 0, 0], [1, 1, 1, 0]]:
+                    self.values = [[0, 0, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [1, 1, 0, 0]]
+                elif self.values == [[0, 0, 0, 0], [1, 1, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]]:
+                    self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [1, 0, 0, 0], [1, 1, 1, 0]]
+                else:
+                    self.values = [[0, 0, 0, 0], [1, 1, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]]
+                return
+
+        if self.color == purple:
+            if param == 0:
+                if self.values == [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 0], [0, 1, 0, 0]]:
+                    self.values = [[0, 0, 0, 0], [0, 1, 0, 0], [1, 1, 0, 0], [0, 1, 0, 0]]
+                elif self.values == [[0, 0, 0, 0], [0, 1, 0, 0], [1, 1, 0, 0], [0, 1, 0, 0]]:
+                    self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 1, 0, 0], [1, 1, 1, 0]]
+                elif self.values == [[0, 0, 0, 0], [0, 0, 0, 0], [0, 1, 0, 0], [1, 1, 1, 0]]:
+                    self.values = [[0, 0, 0, 0], [1, 0, 0, 0], [1, 1, 0, 0], [1, 0, 0, 0]]
+                else:
+                    self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 0], [0, 1, 0, 0]]
+                return
+
+            else:
+                if self.values == [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 0], [0, 1, 0, 0]]:
+                    self.values = [[0, 0, 0, 0], [1, 0, 0, 0], [1, 1, 0, 0], [1, 0, 0, 0]]
+                elif self.values == [[0, 0, 0, 0], [0, 1, 0, 0], [1, 1, 0, 0], [0, 1, 0, 0]]:
+                    self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 0], [0, 1, 0, 0]]
+                elif self.values == [[0, 0, 0, 0], [0, 0, 0, 0], [0, 1, 0, 0], [1, 1, 1, 0]]:
+                    self.values = [[0, 0, 0, 0], [0, 1, 0, 0], [1, 1, 0, 0], [0, 1, 0, 0]]
+                else:
+                    self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 1, 0, 0], [1, 1, 1, 0]]
+                return
+
+        if self.color == orange:
+            if param == 0:
+                if self.values == [[0, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 1, 0, 0]]:
+                    self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 0], [1, 0, 0, 0]]
+                elif self.values == [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 0], [1, 0, 0, 0]]:
+                    self.values = [[0, 0, 0, 0], [1, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]]
+                elif self.values == [[0, 0, 0, 0], [1, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]]:
+                    self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0], [1, 1, 1, 0]]
+                else:
+                    self.values = [[0, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 1, 0, 0]]
+                return
+
+            else:
+                if self.values == [[0, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 1, 0, 0]]:
+                    self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0], [1, 1, 1, 0]]
+                elif self.values == [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 0], [1, 0, 0, 0]]:
+                    self.values = [[0, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 1, 0, 0]]
+                elif self.values == [[0, 0, 0, 0], [1, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]]:
+                    self.values = [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 0], [1, 0, 0, 0]]
+                else:
+                    self.values = [[0, 0, 0, 0], [1, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]]
+                return
+
+class playTetris():
+    def __init__(self):
+        self.current = None
+        self.blocks = []
+        matrix = [([0] * (COLS)) for i in range(ROWS)]
+        matrix.append([1] * COLS)
+        self.tiles = matrix
+        self.x = (COLS // 2 - 1) * BLOCKSIZE
+        self.y = 0
+        self.level = 1
+
+    def checkDone(self):
+        if self.tiles[3][(COLS // 2 - 1)] == 1:
+            return True
+        return False
+
+    def clearRow(self):
+        for r in range(ROWS):
+            if self.tiles[r] == [1] * COLS:
+                if r == 0:
+                    curr = block()
+                    curr.values = [self.tiles[0]]
+                    curr.removePaint(0, 0)
+                    self.tiles[0] = [0] * COLS
+                    return
+                for y in range(r):
+                    self.tiles[r-y] = self.tiles[r-y-1]
+                    for c in range(COLS):
+                        rect = pygame.Rect(c * BLOCKSIZE, (r-y) * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE)
+                        color = screen.get_at((c * BLOCKSIZE + BLOCKSIZE // 2, (r-y-1) * BLOCKSIZE + BLOCKSIZE // 2))
+                        pygame.draw.rect(screen, color, rect)
+                        if color == black:
+                            rect = pygame.Rect(c * BLOCKSIZE, (r-y) * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE)
+                            pygame.draw.rect(screen, white, rect, 1)
+
+                self.tiles[0] = [0] * COLS
+
+                for c in range(COLS):
+                    for y in range(3):
+                        rect = pygame.Rect(c * BLOCKSIZE, y * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE)
+                        pygame.draw.rect(screen, black, rect)
+                pygame.display.update()
+
+    def placePiece(self):
+        curr = self.current
+
+        for r, row in enumerate(curr.values):
+            for c, val in enumerate(row):
+                if val == 1:
+                    self.tiles[self.y // BLOCKSIZE + r][self.x // BLOCKSIZE + c] = 1
+
+        next_block = curr
+        while curr == next_block:
+            next_block = self.blocks[random.randint(0, 6)]
+
+        self.current = next_block
+        self.x, self.y = (COLS // 2 - 1) * BLOCKSIZE, 0
+        self.level += 1
+        self.clearRow()
+        self.current.removePaint((COLS // 2 - 1) * BLOCKSIZE, 0)
+        self.current.paint((COLS // 2 - 1) * BLOCKSIZE, 0)
+
+    def checkCollision(self):
+        for r, row in enumerate(self.current.values):
+            for c, val in enumerate(row):
+                if val == 1:
+                    if self.tiles[self.y // BLOCKSIZE + 1 + r][self.x // BLOCKSIZE + c] == 1:
+                        return True
+        return False
+
+    def rotate(self):
+        curr = self.current
+        curr.removePaint(self.x, self.y)
+        curr.getRotate(0)
+        matrix = curr.values
+
+        for r, row in enumerate(matrix):
+            for c, val in enumerate(row):
+                if val == 1:
+                    param = c
+
+        if self.x // BLOCKSIZE + param >= COLS:
+            curr.getRotate(1)
+            self.current.paint(self.x, self.y)
+            return
+
+        if self.checkCollision():
+            curr.getRotate(1)
+            self.current.paint(self.x, self.y)
+            return
+
+        self.current.paint(self.x, self.y)
+        return
+
+    def move(self, dx):
+        if dx == -1 and self.x // BLOCKSIZE - 1 >= 0:
+            for i in range(4):
+                if self.current.values[i][0] == 1 and self.tiles[self.y // BLOCKSIZE + i][self.x // BLOCKSIZE - 1] == 1:
+                    return
+            self.current.removePaint(self.x, self.y)
+            self.x += dx * BLOCKSIZE
+            self.current.paint(self.x, self.y)
+            return
+
+        if dx == 1:
+            param = 0
+            for r, row in enumerate(self.current.values):
+                for c, val in enumerate(row):
+                    if val == 1 and c > param:
+                        param = c
+
+            if self.x // BLOCKSIZE + 1 + param < COLS:
+                for i in range(4):
+                    if self.current.values[i][param] == 1 and self.tiles[self.y // BLOCKSIZE + i][self.x // BLOCKSIZE + 1 + param] == 1:
+                        return
+                self.current.removePaint(self.x, self.y)
+                self.x += dx * BLOCKSIZE
+                self.current.paint(self.x, self.y)
+                return
+
+    def down(self):
+        if 0 <= self.y // BLOCKSIZE + 4 < ROWS:
+            if not self.checkCollision():
+                self.current.removePaint(self.x, self.y)
+                self.y += BLOCKSIZE
+                self.current.paint(self.x, self.y)
+                return
+        self.placePiece()
+        return
+
+    def space(self):
+        curr = self.current
+        while curr == self.current:
+            self.down()
+
+screen = pygame.display.set_mode((LEN, WID))
+pygame.init()
+game = playTetris()
+
+cyanArray = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 1]]
+blueArray = [[0, 0, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [1, 1, 0, 0]]
+orangeArray = [[0, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 1, 0, 0]]
+yellowArray = [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 0, 0], [1, 1, 0, 0]]
+greenArray = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 1, 1, 0], [1, 1, 0, 0]]
+purpleArray = [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 0], [0, 1, 0, 0]]
+redArray = [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 0, 0], [0, 1, 1, 0]]
+game.blocks = [block(cyanArray, cyan), block(blueArray, blue), block(orangeArray, orange), block(yellowArray, yellow),
+               block(greenArray, green), block(purpleArray, purple), block(redArray, red)]
+
+clock = pygame.time.Clock()
+counter = 0
+fps = 25
+pressing = False
+
+for r in range(3, ROWS):
+    for c in range(COLS):
+        rect = pygame.Rect(c * BLOCKSIZE, r * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE)
+        pygame.draw.rect(screen, white, rect, 1)
+
+game.current = game.blocks[random.randint(0, 6)]
+game.current.paint(game.x, game.y)
+
+clickedx = False
+done = False
+while not done:
+    done = game.checkDone()
+    if done:
+        break
+
+    counter += 1
+    if counter > 100000:
+        counter = 0
+
+    level = game.level
+    if level > 100:
+        level = 100
+
+    if counter % (fps // (1 + (level // 10))) == 0 or pressing:
+        game.down()
+
+    ev = pygame.event.get()
+
+    for event in ev:
+        if event.type == pygame.QUIT:
+            done = True
+            clickedx = True
+            break
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                game.rotate()
+            if event.key == pygame.K_LEFT:
+                game.move(-1)
+            if event.key == pygame.K_RIGHT:
+                game.move(1)
+            if event.key == pygame.K_DOWN:
+                pressing = True
+            if event.key == pygame.K_SPACE:
+                game.space()
+        if event.type == pygame.KEYUP:
+            pressing = False
+
+    pygame.display.flip()
+    clock.tick(fps)
+
+print("Finished on level " + str(1 + (game.level - 1) // 10))
+
+while not clickedx:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            clickedx = True
+
+pygame.quit()
+
+
+
